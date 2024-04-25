@@ -13,10 +13,12 @@ import android.graphics.Color;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.format.Formatter;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -34,12 +36,15 @@ public class MainActivity extends AppCompatActivity {
     private WifiTest wifiTest;
     private BluetoothTest bleTest;
     private static final String TAG = "MainActivity";
+    private TextView tv_deviceName;
+    private TextView tv_deviceVersion;
     private TextView tv_wifiIp;
     private TextView tv_wifiName;
     private TextView tv_wifiResult;
     private TextView tv_blMac;
     private TextView tv_blDevice;
     private TextView tv_blResult;
+    private TextView tv_keyResult;
     WifiManager wifiManager;
     BluetoothAdapter bluetoothAdapter;
     IntentFilter wifiFilter;
@@ -51,11 +56,33 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-
+        deviceInfo();
         wifiInit();
         bleInit();
+        tv_keyResult = findViewById(R.id.key_result);
     }
 
+    private void deviceInfo(){
+        String deviceName = Build.MANUFACTURER + " " + Build.MODEL;
+        String androidVersion = Build.VERSION.RELEASE;
+        tv_deviceName = findViewById(R.id.device_name);
+        tv_deviceVersion = findViewById(R.id.device_version);
+        tv_deviceName.setText("设备名称:" + deviceName);
+        tv_deviceVersion.setText("Android版本:"+androidVersion);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_DPAD_CENTER){
+            tv_keyResult.setText("成功");
+            tv_keyResult.setTextColor(Color.GREEN);
+            return true;
+        }
+        return super.onKeyDown(keyCode,event);
+    }
+
+    /*
+    * 蓝牙测试*/
     private void bleInit() {
         deviceList = new ArrayList<>();
         bleTest = new BluetoothTest(this);
@@ -89,6 +116,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /*
+    * wifi测试*/
     private void wifiInit() {
         wifiTest = new WifiTest(this);
         tv_wifiIp = findViewById(R.id.ip_address);

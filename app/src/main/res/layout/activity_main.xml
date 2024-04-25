@@ -18,13 +18,34 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="20dp">
+            android:paddingStart="20dp"
+            android:layout_marginTop="@dimen/textMargin">
+            <TextView
+                android:id="@+id/device_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Android device"
+                android:textSize="@dimen/textSize"/>
+            <TextView
+                android:id="@+id/device_version"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="9.0"
+                android:textSize="@dimen/textSize"
+                android:layout_toEndOf="@+id/device_name"
+                android:layout_marginStart="20dp"/>
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="20dp"
+            android:layout_marginTop="@dimen/textMargin">
             <TextView
                 android:id="@+id/wifi_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Wifi测试:"
-                android:textSize="20sp"/>
+                android:textSize="@dimen/textSize"/>
             <TextView
                 android:id="@+id/wifi_name"
                 android:layout_width="wrap_content"
@@ -32,13 +53,13 @@
                 android:text="wifi6测试"
                 android:layout_toEndOf="@+id/wifi_title"
                 android:layout_marginStart="10dp"
-                android:textSize="20sp"/>
+                android:textSize="@dimen/textSize"/>
             <TextView
                 android:id="@+id/ip_address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="ip:"
-                android:textSize="20sp"
+                android:textSize="@dimen/textSize"
                 android:layout_toEndOf="@+id/wifi_name"
                 android:layout_marginStart="10dp"/>
             <TextView
@@ -48,18 +69,19 @@
                 android:text="待测试"
                 android:layout_alignParentRight="true"
                 android:layout_marginEnd="10dp"
-                android:textSize="20sp"/>
+                android:textSize="@dimen/textSize"/>
         </RelativeLayout>
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="20dp">
+            android:paddingStart="20dp"
+            android:layout_marginTop="@dimen/textMargin">
             <TextView
                 android:id="@+id/bluetooth_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="蓝牙测试:"
-                android:textSize="20sp"/>
+                android:textSize="@dimen/textSize"/>
             <TextView
                 android:id="@+id/bluetooth_mac"
                 android:layout_width="wrap_content"
@@ -67,7 +89,7 @@
                 android:text="0.0.0.0"
                 android:layout_toEndOf="@+id/bluetooth_title"
                 android:layout_marginStart="10dp"
-                android:textSize="20sp"/>
+                android:textSize="@dimen/textSize"/>
             <TextView
                 android:id="@+id/bluetooth_device"
                 android:layout_width="wrap_content"
@@ -75,7 +97,7 @@
                 android:text="搜索到0个设备"
                 android:layout_toEndOf="@+id/bluetooth_mac"
                 android:layout_marginStart="10dp"
-                android:textSize="20sp"/>
+                android:textSize="@dimen/textSize"/>
             <TextView
                 android:id="@+id/bluetooth_result"
                 android:layout_width="wrap_content"
@@ -83,18 +105,19 @@
                 android:text="待测试"
                 android:layout_alignParentRight="true"
                 android:layout_marginEnd="10dp"
-                android:textSize="20sp"/>
+                android:textSize="@dimen/textSize"/>
         </RelativeLayout>
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="20dp">
+            android:paddingStart="20dp"
+            android:layout_marginTop="@dimen/textMargin">
             <TextView
                 android:id="@+id/speaker_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="speaker测试:"
-                android:textSize="20sp"/>
+                android:textSize="@dimen/textSize"/>
             <TextView
                 android:id="@+id/speaker_name"
                 android:layout_width="wrap_content"
@@ -102,18 +125,19 @@
                 android:text="人工判断"
                 android:layout_toEndOf="@+id/speaker_title"
                 android:layout_marginStart="10dp"
-                android:textSize="20sp"/>
+                android:textSize="@dimen/textSize"/>
         </RelativeLayout>
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="20dp">
+            android:paddingStart="20dp"
+            android:layout_marginTop="@dimen/textMargin">
             <TextView
                 android:id="@+id/key_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="按键测试:"
-                android:textSize="20sp"/>
+                android:textSize="@dimen/textSize"/>
             <TextView
                 android:id="@+id/key_name"
                 android:layout_width="wrap_content"
@@ -121,26 +145,27 @@
                 android:text="请点击ok键"
                 android:layout_toEndOf="@+id/key_title"
                 android:layout_marginStart="10dp"
-                android:textSize="20sp"/>
+                android:textSize="@dimen/textSize"/>
             <TextView
                 android:id="@+id/key_result"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="测试成功"
+                android:text="待测试"
                 android:layout_alignParentRight="true"
                 android:layout_marginEnd="10dp"
-                android:textSize="20sp"/>
+                android:textSize="@dimen/textSize"/>
         </RelativeLayout>
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="20dp">
+            android:paddingStart="20dp"
+            android:layout_marginTop="@dimen/textMargin">
             <TextView
                 android:id="@+id/USB_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="USB测试:"
-                android:textSize="20sp"/>
+                android:textSize="@dimen/textSize"/>
             <TextView
                 android:id="@+id/USB_name"
                 android:layout_width="wrap_content"
@@ -148,7 +173,7 @@
                 android:text="wifi6测试"
                 android:layout_toEndOf="@+id/USB_title"
                 android:layout_marginStart="10dp"
-                android:textSize="20sp"/>
+                android:textSize="@dimen/textSize"/>
             <TextView
                 android:id="@+id/USB_result"
                 android:layout_width="wrap_content"
@@ -156,7 +181,7 @@
                 android:text="测试成功"
                 android:layout_alignParentRight="true"
                 android:layout_marginEnd="10dp"
-                android:textSize="20sp"/>
+                android:textSize="@dimen/textSize"/>
         </RelativeLayout>
     </LinearLayout>
     <LinearLayout
