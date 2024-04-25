@@ -10,22 +10,27 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.hardware.usb.UsbManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.twd.factorytesting.test.BluetoothTest;
+import com.twd.factorytesting.test.USBTest;
 import com.twd.factorytesting.test.WifiTest;
 
 import java.util.ArrayList;
@@ -35,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
     private WifiTest wifiTest;
     private BluetoothTest bleTest;
+    private USBTest usbTest;
     private static final String TAG = "MainActivity";
     private TextView tv_deviceName;
     private TextView tv_deviceVersion;
@@ -45,11 +51,29 @@ public class MainActivity extends AppCompatActivity {
     private TextView tv_blDevice;
     private TextView tv_blResult;
     private TextView tv_keyResult;
+    private TextView tv_usbName;
+    private TextView tv_usbResult;
     WifiManager wifiManager;
     BluetoothAdapter bluetoothAdapter;
     IntentFilter wifiFilter;
     IntentFilter bleFilter;
+    IntentFilter usbFilter;
     private List<BluetoothDevice> deviceList;
+
+    private Handler mHandler = new Handler(Looper.getMainLooper()){
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            String message = (String) msg.obj;
+            if (message.equals("In")){
+                tv_usbName.setText("已插入");
+                tv_usbResult.setText("成功");
+                tv_usbResult.setTextColor(Color.GREEN);
+            } else if (message.equals("Out")) {
+                tv_usbName.setText("已拔出");
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +84,27 @@ public class MainActivity extends AppCompatActivity {
         wifiInit();
         bleInit();
         tv_keyResult = findViewById(R.id.key_result);
+        usbInit();
     }
 
+    /*
+    * USB测试*/
+    private void usbInit(){
+        usbTest = new USBTest(this,mHandler);
+        tv_usbName = findViewById(R.id.USB_name);
+        tv_usbResult = findViewById(R.id.USB_result);
+        usbFilter = new IntentFilter();
+        usbFilter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
+        usbFilter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
+        if (usbTest.isConnected()){
+            tv_usbName.setText("已插入");
+            tv_usbResult.setText("成功");
+            tv_usbResult.setTextColor(Color.GREEN);
+        }
+    }
+
+    /*
+    * 设备信息*/
     private void deviceInfo(){
         String deviceName = Build.MANUFACTURER + " " + Build.MODEL;
         String androidVersion = Build.VERSION.RELEASE;
@@ -71,6 +114,8 @@ public class MainActivity extends AppCompatActivity {
         tv_deviceVersion.setText("Android版本:"+androidVersion);
     }
 
+    /*
+    * 按键测试*/
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_DPAD_CENTER){
@@ -157,6 +202,7 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         unregisterReceiver(wifiReceiver);
         unregisterReceiver(bleReceiver);
+        unregisterReceiver(usbTest.usbReceiver);
     }
 
     @Override
@@ -164,6 +210,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         registerReceiver(wifiReceiver, wifiFilter);
         registerReceiver(bleReceiver, bleFilter);
+        registerReceiver(usbTest.usbReceiver, usbFilter);
     }
 
     private final BroadcastReceiver wifiReceiver = new BroadcastReceiver() {

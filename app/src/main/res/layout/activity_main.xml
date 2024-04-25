@@ -170,7 +170,7 @@
                 android:id="@+id/USB_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="wifi6测试"
+                android:text="未插入"
                 android:layout_toEndOf="@+id/USB_title"
                 android:layout_marginStart="10dp"
                 android:textSize="@dimen/textSize"/>
@@ -178,7 +178,7 @@
                 android:id="@+id/USB_result"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="测试成功"
+                android:text="待测试"
                 android:layout_alignParentRight="true"
                 android:layout_marginEnd="10dp"
                 android:textSize="@dimen/textSize"/>
