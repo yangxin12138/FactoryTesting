@@ -30,6 +30,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.twd.factorytesting.test.BluetoothTest;
+import com.twd.factorytesting.test.HeadsetTest;
 import com.twd.factorytesting.test.USBTest;
 import com.twd.factorytesting.test.WifiTest;
 
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private WifiTest wifiTest;
     private BluetoothTest bleTest;
     private USBTest usbTest;
+    private HeadsetTest headsetTest;
     private static final String TAG = "MainActivity";
     private TextView tv_deviceName;
     private TextView tv_deviceVersion;
@@ -53,11 +55,14 @@ public class MainActivity extends AppCompatActivity {
     private TextView tv_keyResult;
     private TextView tv_usbName;
     private TextView tv_usbResult;
+    private TextView tv_headsetName;
+    private TextView tv_headsetResult;
     WifiManager wifiManager;
     BluetoothAdapter bluetoothAdapter;
     IntentFilter wifiFilter;
     IntentFilter bleFilter;
     IntentFilter usbFilter;
+    IntentFilter headsetFilter;
     private List<BluetoothDevice> deviceList;
 
     private Handler mHandler = new Handler(Looper.getMainLooper()){
@@ -71,9 +76,19 @@ public class MainActivity extends AppCompatActivity {
                 tv_usbResult.setTextColor(Color.GREEN);
             } else if (message.equals("Out")) {
                 tv_usbName.setText("已拔出");
+            } else if (message.equals("plug")) {
+                Log.d(TAG, "handleMessage: 耳机插入");
+                tv_headsetName.setText("已检测到耳机");
+                tv_headsetResult.setText("成功");
+                tv_headsetResult.setTextColor(Color.GREEN);
+            } else if (message.equals("unplug")) {
+                Log.d(TAG, "handleMessage: 耳机拔出");
+                tv_headsetName.setText("未检测到耳机");
             }
         }
     };
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +100,25 @@ public class MainActivity extends AppCompatActivity {
         bleInit();
         tv_keyResult = findViewById(R.id.key_result);
         usbInit();
+        headsetInit();
+    }
+
+    /*
+    * 耳机测试*/
+    private void headsetInit(){
+        headsetTest = new HeadsetTest(this,mHandler);
+        tv_headsetName = findViewById(R.id.headset_name);
+        tv_headsetResult = findViewById(R.id.headset_result);
+        headsetFilter = new IntentFilter();
+        headsetFilter.addAction(Intent.ACTION_HEADSET_PLUG);
+        if (headsetTest.isWired()){
+            tv_headsetName.setText("未检测到耳机");
+        }else {
+            tv_headsetName.setText("已检测到耳机");
+            tv_headsetResult.setText("成功");
+            tv_headsetResult.setTextColor(Color.GREEN);
+
+        }
     }
 
     /*
@@ -203,6 +237,7 @@ public class MainActivity extends AppCompatActivity {
         unregisterReceiver(wifiReceiver);
         unregisterReceiver(bleReceiver);
         unregisterReceiver(usbTest.usbReceiver);
+        unregisterReceiver(headsetTest.headsetReceiver);
     }
 
     @Override
@@ -211,6 +246,7 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(wifiReceiver, wifiFilter);
         registerReceiver(bleReceiver, bleFilter);
         registerReceiver(usbTest.usbReceiver, usbFilter);
+        registerReceiver(headsetTest.headsetReceiver,headsetFilter);
     }
 
     private final BroadcastReceiver wifiReceiver = new BroadcastReceiver() {
