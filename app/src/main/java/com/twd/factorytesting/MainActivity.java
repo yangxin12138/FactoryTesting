@@ -11,7 +11,10 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.hardware.usb.UsbManager;
+import android.media.tv.TvContract;
+import android.media.tv.TvView;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -57,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tv_usbResult;
     private TextView tv_headsetName;
     private TextView tv_headsetResult;
+    private TvView hdmiView;
     WifiManager wifiManager;
     BluetoothAdapter bluetoothAdapter;
     IntentFilter wifiFilter;
@@ -101,6 +105,17 @@ public class MainActivity extends AppCompatActivity {
         tv_keyResult = findViewById(R.id.key_result);
         usbInit();
         headsetInit();
+        //hdmiInit();
+    }
+
+    /*
+    * hdmi测试*/
+    private void hdmiInit(){
+        String input = "com.softwinner.vis/.HdmiInputService/HW1";
+        hdmiView = findViewById(R.id.hdmi_view);
+        hdmiView.reset();
+        Uri uri = TvContract.buildChannelUriForPassthroughInput(input);
+        hdmiView.tune(input,uri);
     }
 
     /*
@@ -234,6 +249,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
+        hdmiView.reset();
         unregisterReceiver(wifiReceiver);
         unregisterReceiver(bleReceiver);
         unregisterReceiver(usbTest.usbReceiver);
@@ -241,8 +257,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        hdmiView.reset();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        hdmiInit();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
+        hdmiInit();
         registerReceiver(wifiReceiver, wifiFilter);
         registerReceiver(bleReceiver, bleFilter);
         registerReceiver(usbTest.usbReceiver, usbFilter);

@@ -217,8 +217,13 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:orientation="vertical">
-
+        android:orientation="vertical"
+        android:paddingTop="150dp"
+        android:paddingBottom="150dp">
+        <android.media.tv.TvView
+            android:id="@+id/hdmi_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
     </LinearLayout>
 
 </LinearLayout>
