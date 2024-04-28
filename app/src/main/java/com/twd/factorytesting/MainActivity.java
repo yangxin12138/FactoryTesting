@@ -34,6 +34,7 @@ import androidx.core.app.ActivityCompat;
 
 import com.twd.factorytesting.test.BluetoothTest;
 import com.twd.factorytesting.test.HeadsetTest;
+import com.twd.factorytesting.test.SpeakTest;
 import com.twd.factorytesting.test.USBTest;
 import com.twd.factorytesting.test.WifiTest;
 
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothTest bleTest;
     private USBTest usbTest;
     private HeadsetTest headsetTest;
+    private SpeakTest speakTest;
     private static final String TAG = "MainActivity";
     private TextView tv_deviceName;
     private TextView tv_deviceVersion;
@@ -106,6 +108,20 @@ public class MainActivity extends AppCompatActivity {
         usbInit();
         headsetInit();
         //hdmiInit();
+        speakTest= new SpeakTest(this);
+    }
+
+    /*
+    * speaker测试*/
+    private void speakerInit(){
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                speakTest.playMusic();
+            }
+        },4000);
+
+
     }
 
     /*
@@ -249,7 +265,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
+        Log.d("yangxin", "onPause: 暂停了");
         hdmiView.reset();
+        speakTest.stop();
         unregisterReceiver(wifiReceiver);
         unregisterReceiver(bleReceiver);
         unregisterReceiver(usbTest.usbReceiver);
@@ -260,18 +278,24 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         hdmiView.reset();
+        Log.d("yangxin", "onPause: 暂停了");
+        speakTest.stop();
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
+        Log.d("yangxin", "onRestart: 重新播放");
         hdmiInit();
+        speakerInit();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d("yangxin", "onResume: 继续播放");
         hdmiInit();
+        speakerInit();
         registerReceiver(wifiReceiver, wifiFilter);
         registerReceiver(bleReceiver, bleFilter);
         registerReceiver(usbTest.usbReceiver, usbFilter);
