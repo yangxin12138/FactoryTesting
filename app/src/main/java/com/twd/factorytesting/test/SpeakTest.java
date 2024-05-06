@@ -44,7 +44,9 @@ public class SpeakTest {
 
     public void stop(){
         Log.d("yangxin", "stop: 音频停止了");
-        soundPool.stop(soundId);
-        soundPool.release();
+        if (soundPool!=null){
+            soundPool.stop(soundId);
+            soundPool.release();
+        }
     }
 }

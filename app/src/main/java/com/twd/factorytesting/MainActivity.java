@@ -22,9 +22,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -37,6 +39,7 @@ import com.twd.factorytesting.test.HeadsetTest;
 import com.twd.factorytesting.test.SpeakTest;
 import com.twd.factorytesting.test.USBTest;
 import com.twd.factorytesting.test.WifiTest;
+import com.twd.factorytesting.util.USBUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     IntentFilter usbFilter;
     IntentFilter headsetFilter;
     private List<BluetoothDevice> deviceList;
+    USBUtil usbUtil;
 
     private Handler mHandler = new Handler(Looper.getMainLooper()){
         @Override
@@ -102,13 +106,22 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         deviceInfo();
-        wifiInit();
         bleInit();
         tv_keyResult = findViewById(R.id.key_result);
         usbInit();
         headsetInit();
         //hdmiInit();
+        usbUtil = new USBUtil(this);
+        wifiInit();
         speakTest= new SpeakTest(this);
+        /*IntentFilter usbFilter = new IntentFilter(Intent.ACTION_MEDIA_MOUNTED);
+        usbFilter.addDataScheme("file");
+        registerReceiver(usbUtil.UsbPathReceiver,usbFilter);*/
+
+        //returnReceiver
+        IntentFilter returnFilter = new IntentFilter(Intent.ACTION_MEDIA_MOUNTED);
+        returnFilter.addDataScheme("file");
+        registerReceiver(returnReceiver,returnFilter);
     }
 
     /*
@@ -201,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
         tv_blResult = findViewById(R.id.bluetooth_result);
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         bleFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        registerReceiver(bleReceiver, bleFilter);
         if (!bleTest.isSupport()) {
             tv_blMac.setText("不支持蓝牙");
             tv_blResult.setText("失败");
@@ -215,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
                     if (ActivityCompat.checkSelfPermission(getApplication(), Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
                         return;}
                     bluetoothAdapter.cancelDiscovery();
-                    unregisterReceiver(bleReceiver);
+                   // unregisterReceiver(bleReceiver);
                     tv_blDevice.setText("搜索到"+deviceList.size()+"个设备");
                     tv_blResult.setText("成功");
                     tv_blResult.setTextColor(Color.GREEN);
@@ -229,6 +243,7 @@ public class MainActivity extends AppCompatActivity {
     /*
     * wifi测试*/
     private void wifiInit() {
+        Log.i(TAG, "wifiInit: ------初始化网络--------");
         wifiTest = new WifiTest(this);
         tv_wifiIp = findViewById(R.id.ip_address);
         tv_wifiName = findViewById(R.id.wifi_name);
@@ -239,7 +254,16 @@ public class MainActivity extends AppCompatActivity {
         tv_wifiName.setText(wifiTest.getSSID(wifiInfo));
         wifiFilter = new IntentFilter();
         wifiFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-        String ssid = "WiFi_2.4";
+        if (!tv_wifiIp.getText().toString().equals("IP:0.0.0.0")){
+            tv_wifiResult.setText("成功");
+            tv_wifiResult.setTextColor(Color.GREEN);
+        }
+        if (!usbUtil.getUsbFilePath().equals("")){
+            Log.i(TAG, "wifiInit: U盘路径："+usbUtil.getUsbFilePath());
+        }else {
+            Log.i(TAG, "wifiInit: U盘未挂载");
+        }
+        /*String ssid = "WiFi_2.4";
         String password = "kkkkkkkk";
         if (!wifiTest.isConnect()) {
             Log.d(TAG, "onCreate: 没连wifi，给连上");
@@ -259,6 +283,40 @@ public class MainActivity extends AppCompatActivity {
         } else {
             tv_wifiResult.setText("成功");
             tv_wifiResult.setTextColor(Color.GREEN);
+        }*/
+
+       /* if (wifiTest.isConnect()){
+            tv_wifiResult.setText("成功");
+            tv_wifiResult.setTextColor(Color.GREEN);
+        }
+        String ssid = usbUtil.getWifiSSID();
+        String password = usbUtil.getPassWord();*/
+    }
+    private void connectWifi(){
+        String ssid = usbUtil.getWifiSSID();
+        String password = usbUtil.getPassWord();
+        Log.i(TAG, "connectWifi: ssid = "+ssid+",password = "+password);
+        //可以做成就算现在已经连着一个WiFi了，也强制换成U盘中的这个网络
+        if (!wifiTest.isConnect() && ssid!=null && password!=null) {
+            Log.i(TAG, "connectWifi: 进入连接");
+            Log.d(TAG, "onCreate: 没连wifi，给连上");
+            wifiTest.connectToWifi(ssid, password);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (wifiTest.getCurrentWifiSsid(wifiManager).equals(ssid)) {
+                        tv_wifiResult.setText("成功");
+                        tv_wifiResult.setTextColor(Color.GREEN);
+                    } else {
+                        tv_wifiResult.setText("失败");
+                        tv_wifiResult.setTextColor(Color.RED);
+                    }
+                }
+            }, 4000);
+        } else {
+            Log.i(TAG, "connectWifi: 未进入连接");
+            tv_wifiResult.setText("成功");
+            tv_wifiResult.setTextColor(Color.GREEN);
         }
     }
 
@@ -272,6 +330,8 @@ public class MainActivity extends AppCompatActivity {
         unregisterReceiver(bleReceiver);
         unregisterReceiver(usbTest.usbReceiver);
         unregisterReceiver(headsetTest.headsetReceiver);
+        //unregisterReceiver(usbUtil.UsbPathReceiver);
+        unregisterReceiver(returnReceiver);
     }
 
     @Override
@@ -296,6 +356,8 @@ public class MainActivity extends AppCompatActivity {
         Log.d("yangxin", "onResume: 继续播放");
         hdmiInit();
         speakerInit();
+        wifiInit();
+        bleInit();
         registerReceiver(wifiReceiver, wifiFilter);
         registerReceiver(bleReceiver, bleFilter);
         registerReceiver(usbTest.usbReceiver, usbFilter);
@@ -328,6 +390,32 @@ public class MainActivity extends AppCompatActivity {
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 deviceList.add(device);
+            }
+        }
+    };
+
+    private final BroadcastReceiver returnReceiver =new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action != null && action.equals(Intent.ACTION_MEDIA_MOUNTED)){
+                String usbPath = intent.getData().getPath();
+                if (!TextUtils.isEmpty(usbPath)){
+                    usbUtil.usbFilePath=usbPath;
+                    usbUtil.getWifiInfo();
+                    connectWifi();
+                }
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.i("yangxin", "run: ---重启咯---");
+                        Intent restartIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
+                        if (restartIntent != null) {
+                            restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(restartIntent);
+                        }
+                    }
+                }, 4000); // 2000毫秒即2秒
             }
         }
     };
