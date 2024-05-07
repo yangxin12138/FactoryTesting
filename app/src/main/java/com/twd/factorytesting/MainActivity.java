@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tv_headsetName;
     private TextView tv_headsetResult;
     private TvView hdmiView;
+    private TextView tv_softwareNo;
     WifiManager wifiManager;
     BluetoothAdapter bluetoothAdapter;
     IntentFilter wifiFilter;
@@ -186,10 +187,13 @@ public class MainActivity extends AppCompatActivity {
     private void deviceInfo(){
         String deviceName = Build.MANUFACTURER + " " + Build.MODEL;
         String androidVersion = Build.VERSION.RELEASE;
+        String softwareVersion = Build.VERSION.INCREMENTAL;
         tv_deviceName = findViewById(R.id.device_name);
         tv_deviceVersion = findViewById(R.id.device_version);
+        tv_softwareNo = findViewById(R.id.software_version);
         tv_deviceName.setText("设备名称:" + deviceName);
         tv_deviceVersion.setText("Android版本:"+androidVersion);
+        tv_softwareNo.setText(softwareVersion);
     }
 
     /*

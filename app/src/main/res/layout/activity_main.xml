@@ -35,6 +35,27 @@
                 android:layout_toEndOf="@+id/device_name"
                 android:layout_marginStart="20dp"/>
         </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="20dp"
+            android:layout_marginTop="@dimen/textMargin">
+            <TextView
+                android:id="@+id/software_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Software"
+                android:textSize="@dimen/textSize"/>
+            <TextView
+                android:id="@+id/software_version"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="xxx"
+                android:textSize="@dimen/textSize"
+                android:layout_toEndOf="@+id/software_name"
+                android:layout_marginStart="20dp"/>
+        </RelativeLayout>
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
