@@ -264,6 +264,9 @@ public class MainActivity extends AppCompatActivity {
         }
         if (!usbUtil.getUsbFilePath().equals("")){
             Log.i(TAG, "wifiInit: U盘路径："+usbUtil.getUsbFilePath());
+            usbUtil.usbFilePath = usbUtil.getUsbFilePath();
+            usbUtil.getWifiInfo();
+            connectWifi();
         }else {
             Log.i(TAG, "wifiInit: U盘未挂载");
         }
