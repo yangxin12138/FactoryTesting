@@ -120,9 +120,9 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(usbUtil.UsbPathReceiver,usbFilter);*/
 
         //returnReceiver
-        IntentFilter returnFilter = new IntentFilter(Intent.ACTION_MEDIA_MOUNTED);
+        /*IntentFilter returnFilter = new IntentFilter(Intent.ACTION_MEDIA_MOUNTED);
         returnFilter.addDataScheme("file");
-        registerReceiver(returnReceiver,returnFilter);
+        registerReceiver(returnReceiver,returnFilter);*/
     }
 
     /*
@@ -338,7 +338,7 @@ public class MainActivity extends AppCompatActivity {
         unregisterReceiver(usbTest.usbReceiver);
         unregisterReceiver(headsetTest.headsetReceiver);
         //unregisterReceiver(usbUtil.UsbPathReceiver);
-        unregisterReceiver(returnReceiver);
+        //unregisterReceiver(returnReceiver);
     }
 
     @Override
