@@ -54,7 +54,7 @@ public class USBTest {
                 UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                 Log.d("USB", "USB device detached: " + device.getDeviceName());
                 //TODO:更新MainActivity中的UI
-                Message message = mHandler.obtainMessage(1,"Out");
+                Message message = mHandler.obtainMessage(2,"Out");
                 mHandler.sendMessage(message);
             }
         }

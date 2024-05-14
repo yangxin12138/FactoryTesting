@@ -21,12 +21,6 @@ public class StartReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
         if (action != null && action.equals(Intent.ACTION_MEDIA_MOUNTED)){
-            /*String usbPath = intent.getData().getPath();
-            if (!TextUtils.isEmpty(usbPath)){
-                Intent localIntent = new Intent("connect_internet");
-                localIntent.putExtra("path",usbPath);
-                context.sendBroadcast(localIntent);
-            }*/
 
             new Handler().postDelayed(new Runnable() {
                 @Override

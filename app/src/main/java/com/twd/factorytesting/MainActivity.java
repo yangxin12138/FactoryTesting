@@ -35,6 +35,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.twd.factorytesting.test.BluetoothTest;
+import com.twd.factorytesting.test.GsensorTest;
 import com.twd.factorytesting.test.HeadsetTest;
 import com.twd.factorytesting.test.SpeakTest;
 import com.twd.factorytesting.test.USBTest;
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tv_wifiIp;
     private TextView tv_wifiName;
     private TextView tv_wifiResult;
+    private TextView tv_wifiMac;
     private TextView tv_blMac;
     private TextView tv_blDevice;
     private TextView tv_blResult;
@@ -67,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tv_headsetResult;
     private TvView hdmiView;
     private TextView tv_softwareNo;
+    private TextView tv_gsensor;
     WifiManager wifiManager;
     BluetoothAdapter bluetoothAdapter;
     IntentFilter wifiFilter;
@@ -75,26 +78,30 @@ public class MainActivity extends AppCompatActivity {
     IntentFilter headsetFilter;
     private List<BluetoothDevice> deviceList;
     USBUtil usbUtil;
+    GsensorTest gsensorTest;
 
     private Handler mHandler = new Handler(Looper.getMainLooper()){
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
             String message = (String) msg.obj;
-            if (message.equals("In")){
+            if (msg.what == 1){
                 tv_usbName.setText("已插入");
                 tv_usbResult.setText("成功");
                 tv_usbResult.setTextColor(Color.GREEN);
-            } else if (message.equals("Out")) {
+            } else if (msg.what == 2) {
                 tv_usbName.setText("已拔出");
-            } else if (message.equals("plug")) {
+            } else if (msg.what == 3) {
                 Log.d(TAG, "handleMessage: 耳机插入");
                 tv_headsetName.setText("已检测到耳机");
                 tv_headsetResult.setText("成功");
                 tv_headsetResult.setTextColor(Color.GREEN);
-            } else if (message.equals("unplug")) {
+            } else if (msg.what == 4) {
                 Log.d(TAG, "handleMessage: 耳机拔出");
                 tv_headsetName.setText("未检测到耳机");
+            } else if (msg.what == 5) {
+                Log.i(TAG, "handleMessage: Gsensor测试回调");
+                tv_gsensor.setText("OK("+message+")");
             }
         }
     };
@@ -115,14 +122,15 @@ public class MainActivity extends AppCompatActivity {
         usbUtil = new USBUtil(this);
         wifiInit();
         speakTest= new SpeakTest(this);
-        /*IntentFilter usbFilter = new IntentFilter(Intent.ACTION_MEDIA_MOUNTED);
-        usbFilter.addDataScheme("file");
-        registerReceiver(usbUtil.UsbPathReceiver,usbFilter);*/
+        gsensorInit();
+    }
 
-        //returnReceiver
-        /*IntentFilter returnFilter = new IntentFilter(Intent.ACTION_MEDIA_MOUNTED);
-        returnFilter.addDataScheme("file");
-        registerReceiver(returnReceiver,returnFilter);*/
+    /*
+    * Gsensor测试*/
+    private void gsensorInit(){
+        tv_gsensor = findViewById(R.id.gsensor_result);
+        gsensorTest = new GsensorTest(this,mHandler);
+        gsensorTest.doTest();
     }
 
     /*
@@ -252,15 +260,18 @@ public class MainActivity extends AppCompatActivity {
         tv_wifiIp = findViewById(R.id.ip_address);
         tv_wifiName = findViewById(R.id.wifi_name);
         tv_wifiResult = findViewById(R.id.wifi_result);
+        tv_wifiMac = findViewById(R.id.wifi_mac_value);
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         tv_wifiIp.setText("IP:" + wifiTest.getIpAddress(wifiInfo));
         tv_wifiName.setText(wifiTest.getSSID(wifiInfo));
+        tv_wifiMac.setText(wifiInfo.getMacAddress());
         wifiFilter = new IntentFilter();
         wifiFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         if (!tv_wifiIp.getText().toString().equals("IP:0.0.0.0")){
             tv_wifiResult.setText("成功");
             tv_wifiResult.setTextColor(Color.GREEN);
+            return;
         }
         if (!usbUtil.getUsbFilePath().equals("")){
             Log.i(TAG, "wifiInit: U盘路径："+usbUtil.getUsbFilePath());
@@ -270,34 +281,6 @@ public class MainActivity extends AppCompatActivity {
         }else {
             Log.i(TAG, "wifiInit: U盘未挂载");
         }
-        /*String ssid = "WiFi_2.4";
-        String password = "kkkkkkkk";
-        if (!wifiTest.isConnect()) {
-            Log.d(TAG, "onCreate: 没连wifi，给连上");
-            wifiTest.connectToWifi(ssid, password);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (wifiTest.getCurrentWifiSsid(wifiManager).equals(ssid)) {
-                        tv_wifiResult.setText("成功");
-                        tv_wifiResult.setTextColor(Color.GREEN);
-                    } else {
-                        tv_wifiResult.setText("失败");
-                        tv_wifiResult.setTextColor(Color.RED);
-                    }
-                }
-            }, 4000);
-        } else {
-            tv_wifiResult.setText("成功");
-            tv_wifiResult.setTextColor(Color.GREEN);
-        }*/
-
-       /* if (wifiTest.isConnect()){
-            tv_wifiResult.setText("成功");
-            tv_wifiResult.setTextColor(Color.GREEN);
-        }
-        String ssid = usbUtil.getWifiSSID();
-        String password = usbUtil.getPassWord();*/
     }
     private void connectWifi(){
         String ssid = usbUtil.getWifiSSID();
@@ -319,7 +302,7 @@ public class MainActivity extends AppCompatActivity {
                         tv_wifiResult.setTextColor(Color.RED);
                     }
                 }
-            }, 4000);
+            }, 6000);
         } else {
             Log.i(TAG, "connectWifi: 未进入连接");
             tv_wifiResult.setText("成功");
@@ -333,12 +316,11 @@ public class MainActivity extends AppCompatActivity {
         Log.d("yangxin", "onPause: 暂停了");
         hdmiView.reset();
         speakTest.stop();
+        gsensorTest.doStop();
         unregisterReceiver(wifiReceiver);
         unregisterReceiver(bleReceiver);
         unregisterReceiver(usbTest.usbReceiver);
         unregisterReceiver(headsetTest.headsetReceiver);
-        //unregisterReceiver(usbUtil.UsbPathReceiver);
-        //unregisterReceiver(returnReceiver);
     }
 
     @Override
@@ -347,6 +329,7 @@ public class MainActivity extends AppCompatActivity {
         hdmiView.reset();
         Log.d("yangxin", "onPause: 暂停了");
         speakTest.stop();
+        gsensorTest.doStop();
     }
 
     @Override
@@ -385,6 +368,7 @@ public class MainActivity extends AppCompatActivity {
                     //wifi断开
                     tv_wifiIp.setText("IP:0.0.0.0");
                     tv_wifiName.setText("null");
+                    tv_wifiMac.setText("ABC:DCF:HUG");
                 }
             }
         }
@@ -397,32 +381,6 @@ public class MainActivity extends AppCompatActivity {
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 deviceList.add(device);
-            }
-        }
-    };
-
-    private final BroadcastReceiver returnReceiver =new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (action != null && action.equals(Intent.ACTION_MEDIA_MOUNTED)){
-                String usbPath = intent.getData().getPath();
-                if (!TextUtils.isEmpty(usbPath)){
-                    usbUtil.usbFilePath=usbPath;
-                    usbUtil.getWifiInfo();
-                    connectWifi();
-                }
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.i("yangxin", "run: ---重启咯---");
-                        Intent restartIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
-                        if (restartIntent != null) {
-                            restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            startActivity(restartIntent);
-                        }
-                    }
-                }, 4000); // 2000毫秒即2秒
             }
         }
     };

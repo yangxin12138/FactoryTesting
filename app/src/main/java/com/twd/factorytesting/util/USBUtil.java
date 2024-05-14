@@ -63,22 +63,6 @@ public class USBUtil {
         Log.d("yangxin", "getWifiInfo: wifiSSID = " + wifiSSID + ",password = " + passWord);
     }
 
-    /*public BroadcastReceiver UsbPathReceiver  = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (action.equals(Intent.ACTION_MEDIA_MOUNTED)){
-                //U盘根目录
-                usbFilePath = intent.getData().getPath();
-                if (!TextUtils.isEmpty(usbFilePath)){
-                    Log.d("yangxin", "onReceive: U盘挂载："+usbFilePath);
-                    getWifiInfo();
-                    Message message = mHandler.obtainMessage(1,"Mounted");
-                    mHandler.sendMessage(message);
-                }
-            }
-        }
-    };*/
 
     public String getUsbFilePath(){
         StorageManager storageManager = (StorageManager) mContext.getSystemService(Context.STORAGE_SERVICE);

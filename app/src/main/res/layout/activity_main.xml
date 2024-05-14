@@ -91,6 +91,21 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginEnd="10dp"
                 android:textSize="@dimen/textSize"/>
+            <TextView
+                android:id="@+id/wifi_mac_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Wifi Mac: "
+                android:layout_below="@+id/wifi_title"
+                android:textSize="@dimen/textSize"/>
+            <TextView
+                android:id="@+id/wifi_mac_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="adb:dfe:ghk"
+                android:layout_below="@+id/wifi_title"
+                android:layout_toEndOf="@+id/wifi_mac_title"
+                android:textSize="@dimen/textSize"/>
         </RelativeLayout>
         <RelativeLayout
             android:layout_width="match_parent"
@@ -230,6 +245,26 @@
                 android:text="待测试"
                 android:layout_alignParentRight="true"
                 android:layout_marginEnd="10dp"
+                android:textSize="@dimen/textSize"/>
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="20dp"
+            android:layout_marginTop="@dimen/textMargin">
+            <TextView
+                android:id="@+id/gsensor_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gsensor:"
+                android:textSize="@dimen/textSize"/>
+            <TextView
+                android:id="@+id/gsensor_result"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="OK/not()"
+                android:layout_toEndOf="@+id/gsensor_title"
+                android:layout_marginStart="10dp"
                 android:textSize="@dimen/textSize"/>
         </RelativeLayout>
     </LinearLayout>

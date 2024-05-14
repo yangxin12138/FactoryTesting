@@ -30,12 +30,12 @@ public class HeadsetTest {
                 switch (state){
                     case 0:
                        //耳机插入
-                       Message message = mHandler.obtainMessage(1,"plug");
+                       Message message = mHandler.obtainMessage(3,"plug");
                        mHandler.sendMessage(message);
                        break;
                     case 1:
                        //耳机拔出
-                       Message message2 = mHandler.obtainMessage(1,"unplug");
+                       Message message2 = mHandler.obtainMessage(4,"unplug");
                        mHandler.sendMessage(message2);
                        break;
                     default:
