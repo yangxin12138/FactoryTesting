@@ -16,6 +16,7 @@ import android.media.tv.TvContract;
 import android.media.tv.TvView;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -72,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tv_softwareNo;
     private TextView tv_gsensor;
     private TextView tv_gsensor_result;
+    private TextView wifi_num;
     WifiManager wifiManager;
     BluetoothAdapter bluetoothAdapter;
     IntentFilter wifiFilter;
@@ -281,11 +283,40 @@ public class MainActivity extends AppCompatActivity {
         tv_wifiName = findViewById(R.id.wifi_name);
         tv_wifiResult = findViewById(R.id.wifi_result);
         tv_wifiMac = findViewById(R.id.wifi_mac_value);
+        wifi_num = findViewById(R.id.wifi_num);
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         tv_wifiIp.setText("IP:" + wifiTest.getIpAddress(wifiInfo));
         tv_wifiName.setText(wifiTest.getSSID(wifiInfo));
         tv_wifiMac.setText(wifiInfo.getMacAddress());
+        if (!wifiManager.isWifiEnabled()){
+            // 如果 Wi-Fi 未开启，无法扫描热点
+            Log.d(TAG, "getWifiNum: wifi未开启");
+            return;
+        }else {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    final int[] count = {0};
+                    registerReceiver(new BroadcastReceiver() {
+                        @Override
+                        public void onReceive(Context context, Intent intent) {
+                            if (intent.getAction().equals(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)) {
+                                if (ActivityCompat.checkSelfPermission(getApplication(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                    return;}
+                                List<ScanResult> scanResults = wifiManager.getScanResults();
+                                count[0] = scanResults.size();
+                                Log.i(TAG, "扫描到的 Wi-Fi 热点个数：" + count[0]);
+                                context.unregisterReceiver(this);
+                                wifi_num.setText("搜索到"+count[0]+"个热点");
+                            }
+                        }
+                    }, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+
+                    wifiManager.startScan();
+                }
+            },2000);
+        }
         wifiFilter = new IntentFilter();
         wifiFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         if (!tv_wifiIp.getText().toString().equals("IP:0.0.0.0")){
