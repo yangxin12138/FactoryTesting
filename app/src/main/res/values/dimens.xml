@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="textSize">25sp</dimen>
+    <dimen name="textSize">40sp</dimen>
+    <dimen name="textSize_sf">35sp</dimen>
     <dimen name="textMargin">5dp</dimen>
 </resources>

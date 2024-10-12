@@ -5,6 +5,7 @@ import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     private TvView hdmiView;
     private TextView tv_softwareNo;
     private TextView tv_gsensor;
+    private TextView tv_gsensor_result;
     WifiManager wifiManager;
     BluetoothAdapter bluetoothAdapter;
     IntentFilter wifiFilter;
@@ -92,16 +94,18 @@ public class MainActivity extends AppCompatActivity {
             } else if (msg.what == 2) {
                 tv_usbName.setText("已拔出");
             } else if (msg.what == 3) {
+                Log.d(TAG, "handleMessage: 耳机拔出");
+                tv_headsetName.setText("未检测到耳机");
+            } else if (msg.what == 4) {
                 Log.d(TAG, "handleMessage: 耳机插入");
                 tv_headsetName.setText("已检测到耳机");
                 tv_headsetResult.setText("成功");
                 tv_headsetResult.setTextColor(Color.GREEN);
-            } else if (msg.what == 4) {
-                Log.d(TAG, "handleMessage: 耳机拔出");
-                tv_headsetName.setText("未检测到耳机");
             } else if (msg.what == 5) {
-                Log.i(TAG, "handleMessage: Gsensor测试回调");
-                tv_gsensor.setText("OK("+message+")");
+                //Log.i(TAG, "handleMessage: Gsensor测试回调");
+                tv_gsensor.setText(message);
+                tv_gsensor_result.setText("成功");
+                tv_gsensor_result.setTextColor(Color.GREEN);
             }
         }
     };
@@ -128,7 +132,8 @@ public class MainActivity extends AppCompatActivity {
     /*
     * Gsensor测试*/
     private void gsensorInit(){
-        tv_gsensor = findViewById(R.id.gsensor_result);
+        tv_gsensor = findViewById(R.id.gsensor_value);
+        tv_gsensor_result = findViewById(R.id.gsensor_result);
         gsensorTest = new GsensorTest(this,mHandler);
         gsensorTest.doTest();
     }
@@ -165,12 +170,17 @@ public class MainActivity extends AppCompatActivity {
         headsetFilter = new IntentFilter();
         headsetFilter.addAction(Intent.ACTION_HEADSET_PLUG);
         if (headsetTest.isWired()){
-            tv_headsetName.setText("未检测到耳机");
-        }else {
+            Log.i(TAG, "headsetInit: 初始化这里检测到");
+            //tv_headsetName.setText("未检测到耳机");
             tv_headsetName.setText("已检测到耳机");
             tv_headsetResult.setText("成功");
             tv_headsetResult.setTextColor(Color.GREEN);
-
+        }else {
+            Log.i(TAG, "headsetInit: 初始化这里未检测");
+            /*tv_headsetName.setText("已检测到耳机");
+            tv_headsetResult.setText("成功");
+            tv_headsetResult.setTextColor(Color.GREEN);*/
+            tv_headsetName.setText("未检测到耳机");
         }
     }
 
@@ -205,13 +215,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /*
-    * 按键测试*/
+    * 按键测试 + 一键进入老化界面*/
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_DPAD_CENTER){
             tv_keyResult.setText("成功");
             tv_keyResult.setTextColor(Color.GREEN);
             return true;
+        }else if (keyCode == KeyEvent.KEYCODE_MENU){
+            Intent agingIntent = new Intent();
+            agingIntent.setComponent(new ComponentName("com.twd.agingtest","com.twd.agingtest.MainActivity"));
+            agingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            try {
+                startActivity(agingIntent);
+            }catch (Exception e){
+                Log.i(TAG,"找不到老化界面");
+                e.printStackTrace();
+            }
         }
         return super.onKeyDown(keyCode,event);
     }
@@ -285,6 +305,8 @@ public class MainActivity extends AppCompatActivity {
     private void connectWifi(){
         String ssid = usbUtil.getWifiSSID();
         String password = usbUtil.getPassWord();
+        /*String ssid = "WiFi6_5G";
+        String password = "kkkkkkkk";*/
         Log.i(TAG, "connectWifi: ssid = "+ssid+",password = "+password);
         //可以做成就算现在已经连着一个WiFi了，也强制换成U盘中的这个网络
         if (!wifiTest.isConnect() && ssid!=null && password!=null) {
@@ -337,7 +359,7 @@ public class MainActivity extends AppCompatActivity {
         super.onRestart();
         Log.d("yangxin", "onRestart: 重新播放");
         hdmiInit();
-        speakerInit();
+        //speakerInit();
     }
 
     @Override
@@ -345,9 +367,10 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         Log.d("yangxin", "onResume: 继续播放");
         hdmiInit();
-        speakerInit();
+        //speakerInit();
         wifiInit();
         bleInit();
+        gsensorInit();
         registerReceiver(wifiReceiver, wifiFilter);
         registerReceiver(bleReceiver, bleFilter);
         registerReceiver(usbTest.usbReceiver, usbFilter);

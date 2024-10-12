@@ -13,8 +13,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:orientation="vertical"
-        android:paddingTop="50dp">
+        android:orientation="vertical">
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -26,16 +25,35 @@
                 android:layout_height="wrap_content"
                 android:text="Android device"
                 android:textSize="@dimen/textSize"/>
+        </RelativeLayout>
+        <TextView
+            android:id="@+id/device_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Android版本：9.0"
+            android:textSize="@dimen/textSize"
+            android:layout_toEndOf="@+id/device_name"
+            android:layout_marginStart="20dp"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="20dp"
+            android:layout_marginTop="@dimen/textMargin">
             <TextView
-                android:id="@+id/device_version"
+                android:id="@+id/rom_size"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="9.0"
+                android:text="存储空间：64GB"
+                android:textSize="@dimen/textSize"/>
+            <TextView
+                android:id="@+id/ram_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="运行空间：8G"
                 android:textSize="@dimen/textSize"
-                android:layout_toEndOf="@+id/device_name"
+                android:layout_toEndOf="@+id/rom_size"
                 android:layout_marginStart="20dp"/>
         </RelativeLayout>
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -46,13 +64,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Software"
-                android:textSize="@dimen/textSize"/>
+                android:textSize="@dimen/textSize_sf"/>
             <TextView
                 android:id="@+id/software_version"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="xxx"
-                android:textSize="@dimen/textSize"
+                android:textSize="@dimen/textSize_sf"
                 android:layout_toEndOf="@+id/software_name"
                 android:layout_marginStart="20dp"/>
         </RelativeLayout>
@@ -82,7 +100,8 @@
                 android:text="ip:"
                 android:textSize="@dimen/textSize"
                 android:layout_toEndOf="@+id/wifi_name"
-                android:layout_marginStart="10dp"/>
+                android:layout_marginStart="10dp"
+                android:visibility="gone"/>
             <TextView
                 android:id="@+id/wifi_result"
                 android:layout_width="wrap_content"
@@ -90,6 +109,7 @@
                 android:text="待测试"
                 android:layout_alignParentRight="true"
                 android:layout_marginEnd="10dp"
+                android:textColor="@color/red"
                 android:textSize="@dimen/textSize"/>
             <TextView
                 android:id="@+id/wifi_mac_title"
@@ -107,6 +127,13 @@
                 android:layout_toEndOf="@+id/wifi_mac_title"
                 android:textSize="@dimen/textSize"/>
         </RelativeLayout>
+        <TextView
+            android:id="@+id/wifi_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="搜索到0个热点"
+            android:layout_marginStart="10dp"
+            android:textSize="@dimen/textSize"/>
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -125,7 +152,8 @@
                 android:text="0.0.0.0"
                 android:layout_toEndOf="@+id/bluetooth_title"
                 android:layout_marginStart="10dp"
-                android:textSize="@dimen/textSize"/>
+                android:textSize="@dimen/textSize"
+                android:visibility="gone"/>
             <TextView
                 android:id="@+id/bluetooth_device"
                 android:layout_width="wrap_content"
@@ -141,13 +169,15 @@
                 android:text="待测试"
                 android:layout_alignParentRight="true"
                 android:layout_marginEnd="10dp"
-                android:textSize="@dimen/textSize"/>
+                android:textColor="@color/red"
+                android:textSize="@dimen/textSize" />
         </RelativeLayout>
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="20dp"
-            android:layout_marginTop="@dimen/textMargin">
+            android:layout_marginTop="@dimen/textMargin"
+            android:visibility="gone">
             <TextView
                 android:id="@+id/speaker_title"
                 android:layout_width="wrap_content"
@@ -189,6 +219,7 @@
                 android:text="待测试"
                 android:layout_alignParentRight="true"
                 android:layout_marginEnd="10dp"
+                android:textColor="@color/red"
                 android:textSize="@dimen/textSize"/>
         </RelativeLayout>
         <RelativeLayout
@@ -217,6 +248,7 @@
                 android:text="待测试"
                 android:layout_alignParentRight="true"
                 android:layout_marginEnd="10dp"
+                android:textColor="@color/red"
                 android:textSize="@dimen/textSize"/>
         </RelativeLayout>
         <RelativeLayout
@@ -245,6 +277,7 @@
                 android:text="待测试"
                 android:layout_alignParentRight="true"
                 android:layout_marginEnd="10dp"
+                android:textColor="@color/red"
                 android:textSize="@dimen/textSize"/>
         </RelativeLayout>
         <RelativeLayout
@@ -256,15 +289,25 @@
                 android:id="@+id/gsensor_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Gsensor:"
+                android:text="重力:"
                 android:textSize="@dimen/textSize"/>
             <TextView
-                android:id="@+id/gsensor_result"
+                android:id="@+id/gsensor_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="OK/not()"
                 android:layout_toEndOf="@+id/gsensor_title"
                 android:layout_marginStart="10dp"
+                android:textSize="@dimen/textSize"/>
+
+            <TextView
+                android:id="@+id/gsensor_result"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="待测试"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="10dp"
+                android:textColor="@color/red"
                 android:textSize="@dimen/textSize"/>
         </RelativeLayout>
     </LinearLayout>
@@ -274,8 +317,8 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:paddingTop="150dp"
-        android:paddingBottom="150dp">
+        android:paddingTop="100dp"
+        android:paddingBottom="100dp">
         <android.media.tv.TvView
             android:id="@+id/hdmi_view"
             android:layout_width="match_parent"

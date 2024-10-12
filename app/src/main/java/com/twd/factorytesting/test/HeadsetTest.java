@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 /**
  * @Author:Yangxin
@@ -29,12 +30,14 @@ public class HeadsetTest {
                 int state = intent.getIntExtra("state",-1);
                 switch (state){
                     case 0:
-                       //耳机插入
+                       //耳机未插入
+                        Log.i("HeadsetTest", "onReceive: HeadsetTest --- 耳机未插入");
                        Message message = mHandler.obtainMessage(3,"plug");
                        mHandler.sendMessage(message);
                        break;
                     case 1:
-                       //耳机拔出
+                       //耳机插入
+                        Log.i("HeadsetTest", "onReceive: HeadsetTest --- 耳机插入");
                        Message message2 = mHandler.obtainMessage(4,"unplug");
                        mHandler.sendMessage(message2);
                        break;
