@@ -2,6 +2,7 @@ package com.twd.factorytesting;
 
 
 import android.Manifest;
+import android.app.usage.StorageStatsManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -21,9 +22,12 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.StatFs;
+import android.os.storage.StorageManager;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;
@@ -42,8 +46,14 @@ import com.twd.factorytesting.test.HeadsetTest;
 import com.twd.factorytesting.test.SpeakTest;
 import com.twd.factorytesting.test.USBTest;
 import com.twd.factorytesting.test.WifiTest;
+import com.twd.factorytesting.util.StorageUtils;
 import com.twd.factorytesting.util.USBUtil;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView tv_gsensor;
     private TextView tv_gsensor_result;
     private TextView wifi_num;
+    private TextView rom_size;
+    private TextView ram_size;
     WifiManager wifiManager;
     BluetoothAdapter bluetoothAdapter;
     IntentFilter wifiFilter;
@@ -214,6 +226,10 @@ public class MainActivity extends AppCompatActivity {
         tv_deviceName.setText("设备名称:" + deviceName);
         tv_deviceVersion.setText("Android版本:"+androidVersion);
         tv_softwareNo.setText(softwareVersion);
+        rom_size = findViewById(R.id.rom_size);
+        ram_size = findViewById(R.id.ram_size);
+        rom_size.setText("存储空间："+ StorageUtils.getTotalStorageSize());
+        ram_size.setText("运行内存："+StorageUtils.getTotalMemorySize());
     }
 
     /*
@@ -390,7 +406,7 @@ public class MainActivity extends AppCompatActivity {
         super.onRestart();
         Log.d("yangxin", "onRestart: 重新播放");
         hdmiInit();
-        //speakerInit();
+        speakerInit();
     }
 
     @Override
@@ -398,7 +414,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         Log.d("yangxin", "onResume: 继续播放");
         hdmiInit();
-        //speakerInit();
+        speakerInit();
         wifiInit();
         bleInit();
         gsensorInit();
