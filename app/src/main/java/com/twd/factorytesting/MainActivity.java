@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
     IntentFilter wifiFilter;
     IntentFilter bleFilter;
     IntentFilter usbFilter;
+    IntentFilter diskFilter;
     IntentFilter headsetFilter;
     private List<BluetoothDevice> deviceList;
     USBUtil usbUtil;
@@ -121,6 +122,9 @@ public class MainActivity extends AppCompatActivity {
                 tv_gsensor.setText(message);
                 tv_gsensor_result.setText("成功");
                 tv_gsensor_result.setTextColor(Color.GREEN);
+            } else if (msg.what == 6) {
+                Log.d(TAG, "handleMessage: u盘文件连接");
+                connectWifi();
             }
         }
     };
@@ -161,9 +165,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 speakTest.playMusic();
             }
-        },4000);
-
-
+        },1000);
     }
 
     /*
@@ -208,6 +210,9 @@ public class MainActivity extends AppCompatActivity {
         usbFilter = new IntentFilter();
         usbFilter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
         usbFilter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
+        diskFilter = new IntentFilter();
+        diskFilter.addAction(Intent.ACTION_MEDIA_MOUNTED);
+        diskFilter.addDataScheme("file");
         if (usbTest.isConnected()){
             tv_usbName.setText("已插入");
             tv_usbResult.setText("成功");
@@ -304,7 +309,6 @@ public class MainActivity extends AppCompatActivity {
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         tv_wifiIp.setText("IP:" + wifiTest.getIpAddress(wifiInfo));
-        tv_wifiName.setText(wifiTest.getSSID(wifiInfo));
         String macAddress = wifiTest.convertMacToUpperCase();
         if (macAddress != null){
             String[] parts = macAddress.split(":");
@@ -336,6 +340,8 @@ public class MainActivity extends AppCompatActivity {
                                 Log.i(TAG, "扫描到的 Wi-Fi 热点个数：" + count[0]);
                                 context.unregisterReceiver(this);
                                 wifi_num.setText("搜索到"+count[0]+"个热点");
+                                tv_wifiResult.setText("成功");
+                                tv_wifiResult.setTextColor(Color.GREEN);
                             }
                         }
                     }, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
@@ -346,47 +352,40 @@ public class MainActivity extends AppCompatActivity {
         }
         wifiFilter = new IntentFilter();
         wifiFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-        if (!tv_wifiIp.getText().toString().equals("IP:0.0.0.0")){
-            tv_wifiResult.setText("成功");
-            tv_wifiResult.setTextColor(Color.GREEN);
-            return;
+        String usbPath = new USBUtil(this).getUsbFilePath();
+        if (!usbPath.isEmpty()) {
+            Log.i(TAG, "应用启动时检测到 U 盘：" + usbPath);
+            connectWifi();
+        }else {
+            Log.i(TAG, "应用启动时没有检测到 U 盘：");
         }
+    }
+    private void connectWifi(){
         if (!usbUtil.getUsbFilePath().equals("")){
             Log.i(TAG, "wifiInit: U盘路径："+usbUtil.getUsbFilePath());
             usbUtil.usbFilePath = usbUtil.getUsbFilePath();
             usbUtil.getWifiInfo();
-            connectWifi();
+            String ssid = usbUtil.getWifiSSID();
+            String password = usbUtil.getPassWord();
+            Log.i(TAG, "connectWifi: ssid = "+ssid+",password = "+password);
+            //可以做成就算现在已经连着一个WiFi了，也强制换成U盘中的这个网络
+            if (!wifiTest.isConnect() && ssid!=null && password!=null) {
+                Log.i(TAG, "connectWifi: 进入连接");
+                Log.d(TAG, "onCreate: 没连wifi，给连上");
+                wifiTest.connectToWifi(ssid, password);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (wifiTest.getCurrentWifiSsid(wifiManager).equals(ssid)) {
+                            tv_wifiName.setText(ssid);
+                        }else {
+                            tv_wifiName.setText("");
+                        }
+                    }
+                }, 2000);
+            }
         }else {
             Log.i(TAG, "wifiInit: U盘未挂载");
-        }
-    }
-    private void connectWifi(){
-        String ssid = usbUtil.getWifiSSID();
-        String password = usbUtil.getPassWord();
-        /*String ssid = "WiFi6_5G";
-        String password = "kkkkkkkk";*/
-        Log.i(TAG, "connectWifi: ssid = "+ssid+",password = "+password);
-        //可以做成就算现在已经连着一个WiFi了，也强制换成U盘中的这个网络
-        if (!wifiTest.isConnect() && ssid!=null && password!=null) {
-            Log.i(TAG, "connectWifi: 进入连接");
-            Log.d(TAG, "onCreate: 没连wifi，给连上");
-            wifiTest.connectToWifi(ssid, password);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (wifiTest.getCurrentWifiSsid(wifiManager).equals(ssid)) {
-                        tv_wifiResult.setText("成功");
-                        tv_wifiResult.setTextColor(Color.GREEN);
-                    } else {
-                        tv_wifiResult.setText("失败");
-                        tv_wifiResult.setTextColor(Color.RED);
-                    }
-                }
-            }, 6000);
-        } else {
-            Log.i(TAG, "connectWifi: 未进入连接");
-            tv_wifiResult.setText("成功");
-            tv_wifiResult.setTextColor(Color.GREEN);
         }
     }
 
@@ -400,6 +399,7 @@ public class MainActivity extends AppCompatActivity {
         unregisterReceiver(wifiReceiver);
         unregisterReceiver(bleReceiver);
         unregisterReceiver(usbTest.usbReceiver);
+        unregisterReceiver(usbTest.uDiskReceiver);
         unregisterReceiver(headsetTest.headsetReceiver);
     }
 
@@ -432,6 +432,7 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(wifiReceiver, wifiFilter);
         registerReceiver(bleReceiver, bleFilter);
         registerReceiver(usbTest.usbReceiver, usbFilter);
+        registerReceiver(usbTest.uDiskReceiver, diskFilter);
         registerReceiver(headsetTest.headsetReceiver,headsetFilter);
     }
 
@@ -449,7 +450,6 @@ public class MainActivity extends AppCompatActivity {
                     //wifi断开
                     tv_wifiIp.setText("IP:0.0.0.0");
                     tv_wifiName.setText("null");
-                    tv_wifiMac.setText("ABC:DCF:HUG");
                 }
             }
         }

@@ -1,5 +1,6 @@
 package com.twd.factorytesting.test;
 
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,7 +10,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.twd.factorytesting.util.USBUtil;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -56,6 +60,22 @@ public class USBTest {
                 //TODO:更新MainActivity中的UI
                 Message message = mHandler.obtainMessage(2,"Out");
                 mHandler.sendMessage(message);
+            }
+        }
+    };
+
+    public BroadcastReceiver uDiskReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i("uDiskReceiver", "触发uDiskReceiver ");
+            String action = intent.getAction();
+            if (action != null && action.equals(Intent.ACTION_MEDIA_MOUNTED)){
+                String usbpath  = new USBUtil(context).getUsbFilePath();
+                Log.i("uDiskReceiver", "run: usbpath = " + usbpath);
+                if (!usbpath.isEmpty()){
+                    Message message = mHandler.obtainMessage(6,"Mounted");
+                    mHandler.sendMessage(message);
+                }
             }
         }
     };
