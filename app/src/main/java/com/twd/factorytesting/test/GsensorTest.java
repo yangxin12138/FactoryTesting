@@ -35,9 +35,9 @@ public class GsensorTest {
                 float x = event.values[SensorManager.DATA_X];
                 float y = event.values[SensorManager.DATA_Y];
                 float z = event.values[SensorManager.DATA_Z];
-                String formattedX = String.format("%.3f", x);
-                String formattedY = String.format("%.3f", y);
-                String formattedZ = String.format("%.3f", z);
+                String formattedX = String.format("%.1f", x);
+                String formattedY = String.format("%.1f", y);
+                String formattedZ = String.format("%.1f", z);
                 //Log.i("yangxin", "onSensorChanged: Gsensor坐标 x y z "+formattedX+formattedY+formattedZ);
                 //TODO:
                 Message message = mHandler.obtainMessage(5,formattedX+","+formattedY+","+formattedZ);
