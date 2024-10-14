@@ -121,4 +121,14 @@ public class WifiTest {
         wifiManager.startScan();
         return count[0];
     }
+
+    public String convertMacToUpperCase() {
+        wifiInfo = wifiManager.getConnectionInfo();
+        String macAddress = wifiInfo.getMacAddress();
+        if(macAddress!=null){
+            return macAddress.toUpperCase();
+        }else {
+            return null;
+        }
+    }
 }

@@ -34,6 +34,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -304,7 +305,17 @@ public class MainActivity extends AppCompatActivity {
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         tv_wifiIp.setText("IP:" + wifiTest.getIpAddress(wifiInfo));
         tv_wifiName.setText(wifiTest.getSSID(wifiInfo));
-        tv_wifiMac.setText(wifiInfo.getMacAddress());
+        String macAddress = wifiTest.convertMacToUpperCase();
+        if (macAddress != null){
+            String[] parts = macAddress.split(":");
+            if (parts.length >= 3 && parts[0].equals("74") && parts[1].equals("AF") && parts[2].equals("F7")){
+                tv_wifiMac.setText(wifiTest.convertMacToUpperCase());
+            }else {
+                //TODO:  mac错误对话框
+                Toast.makeText(this, "MAC错误", Toast.LENGTH_SHORT).show();
+            }
+        }
+        tv_wifiMac.setText(wifiTest.convertMacToUpperCase());
         if (!wifiManager.isWifiEnabled()){
             // 如果 Wi-Fi 未开启，无法扫描热点
             Log.d(TAG, "getWifiNum: wifi未开启");
