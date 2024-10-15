@@ -30,6 +30,7 @@ public class USBUtil {
 
     String wifiSSID;
     String passWord;
+    String verify;
     public String usbFilePath;
 
     private Context mContext;
@@ -63,6 +64,32 @@ public class USBUtil {
         Log.d("yangxin", "getWifiInfo: wifiSSID = " + wifiSSID + ",password = " + passWord);
     }
 
+    public void getMacVerify(){
+        verify = "";
+        try {
+            File file = new File(usbFilePath + "/testInfo.txt");
+            if (!file.exists()) {
+                Log.e("yangxin", "File does not exist.");
+                return;
+            }
+            FileInputStream fis = new FileInputStream(file);
+            BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+            String line;
+            while ((line = br.readLine())!= null) {
+                if (line.contains("mac_verify")) {
+                    String[] parts = line.split("：");
+                    if (parts.length == 2) {
+                        verify = parts[1].trim();
+                    }
+                }
+            }
+            br.close();
+        } catch (Exception e) {
+            Log.e("yangxin", "Failed to read file: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
 
     public String getUsbFilePath(){
         StorageManager storageManager = (StorageManager) mContext.getSystemService(Context.STORAGE_SERVICE);
@@ -86,6 +113,10 @@ public class USBUtil {
 
     public String getPassWord() {
         return passWord;
+    }
+
+    public String getVerify() {
+        return verify;
     }
 
 }

@@ -2,7 +2,7 @@ package com.twd.factorytesting;
 
 
 import android.Manifest;
-import android.app.usage.StorageStatsManager;
+import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -22,22 +22,21 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.os.StatFs;
-import android.os.storage.StorageManager;
-import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.WindowManager;
+import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -50,11 +49,6 @@ import com.twd.factorytesting.test.WifiTest;
 import com.twd.factorytesting.util.StorageUtils;
 import com.twd.factorytesting.util.USBUtil;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -124,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
                 tv_gsensor_result.setTextColor(Color.GREEN);
             } else if (msg.what == 6) {
                 Log.d(TAG, "handleMessage: u盘文件连接");
+                isMacVerify();
                 connectWifi();
             }
         }
@@ -310,16 +305,6 @@ public class MainActivity extends AppCompatActivity {
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         tv_wifiIp.setText("IP:" + wifiTest.getIpAddress(wifiInfo));
         String macAddress = wifiTest.convertMacToUpperCase();
-        if (macAddress != null){
-            String[] parts = macAddress.split(":");
-            if (parts.length >= 3 && parts[0].equals("74") && parts[1].equals("AF") && parts[2].equals("F7")){
-                tv_wifiMac.setText(wifiTest.convertMacToUpperCase());
-            }else {
-                //TODO:  mac错误对话框
-                Toast.makeText(this, "MAC错误", Toast.LENGTH_SHORT).show();
-            }
-        }
-        tv_wifiMac.setText(wifiTest.convertMacToUpperCase());
         if (!wifiManager.isWifiEnabled()){
             // 如果 Wi-Fi 未开启，无法扫描热点
             Log.d(TAG, "getWifiNum: wifi未开启");
@@ -353,13 +338,35 @@ public class MainActivity extends AppCompatActivity {
         wifiFilter = new IntentFilter();
         wifiFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         String usbPath = new USBUtil(this).getUsbFilePath();
+        //主动检查u盘
         if (!usbPath.isEmpty()) {
             Log.i(TAG, "应用启动时检测到 U 盘：" + usbPath);
             connectWifi();
+            isMacVerify();
         }else {
             Log.i(TAG, "应用启动时没有检测到 U 盘：");
         }
     }
+    private void isMacVerify(){
+        String macAddress = wifiTest.convertMacToUpperCase();
+        if (macAddress != null){
+            String[] parts = macAddress.split(":");
+            if (parts.length >= 3 && parts[0].equals("74") && parts[1].equals("AF") && parts[2].equals("F7")){
+                tv_wifiMac.setText(macAddress);
+            }else {
+                usbUtil.usbFilePath = usbUtil.getUsbFilePath();
+                usbUtil.getMacVerify();
+                String verify = usbUtil.getVerify();
+                Log.i("yangxin", "isMacVerify: verify = "+ verify);
+                //TODO:  mac错误对话框
+                if (verify.equals("1")){showMacErrorDialog(); }else {
+                    tv_wifiMac.setText(macAddress);
+                }
+            }
+        }
+    }
+
+
     private void connectWifi(){
         if (!usbUtil.getUsbFilePath().equals("")){
             Log.i(TAG, "wifiInit: U盘路径："+usbUtil.getUsbFilePath());
@@ -388,7 +395,10 @@ public class MainActivity extends AppCompatActivity {
             Log.i(TAG, "wifiInit: U盘未挂载");
         }
     }
-
+    private  void  showMacErrorDialog(){
+        MacErrorDialog dialog = MacErrorDialog.getInstance(this);
+        dialog.show();
+    }
     @Override
     public void onPause() {
         super.onPause();
@@ -408,6 +418,7 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         hdmiView.reset();
         Log.d("yangxin", "onPause: 暂停了");
+        MacErrorDialog.resetInstance();
         speakTest.stop();
         gsensorTest.doStop();
     }
