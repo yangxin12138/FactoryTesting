@@ -89,7 +89,7 @@
                 android:id="@+id/wifi_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="wifi6测试"
+                android:text="null"
                 android:layout_toEndOf="@+id/wifi_title"
                 android:layout_marginStart="10dp"
                 android:textSize="@dimen/textSize"/>
@@ -122,7 +122,7 @@
                 android:id="@+id/wifi_mac_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="adb:dfe:ghk"
+                android:text=""
                 android:layout_below="@+id/wifi_title"
                 android:layout_toEndOf="@+id/wifi_mac_title"
                 android:textSize="@dimen/textSize"/>

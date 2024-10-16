@@ -359,9 +359,10 @@ public class MainActivity extends AppCompatActivity {
                 String verify = usbUtil.getVerify();
                 Log.i("yangxin", "isMacVerify: verify = "+ verify);
                 //TODO:  mac错误对话框
-                if (verify.equals("1")){showMacErrorDialog(); }else {
-                    tv_wifiMac.setText(macAddress);
+                if (verify.equals("1")){
+                    showMacErrorDialog();
                 }
+                tv_wifiMac.setText(macAddress);
             }
         }
     }
