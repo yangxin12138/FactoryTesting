@@ -1,16 +1,29 @@
 package com.twd.factorytesting.util;
 
 import android.app.ActivityManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.twd.factorytesting.MainActivity;
+import com.twd.factorytesting.WifiConnectionService;
+import com.twd.factorytesting.test.WifiTest;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 
 /**
@@ -23,46 +36,18 @@ public class StartReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
-        if (action != null && action.equals(Intent.ACTION_MEDIA_MOUNTED)){
-            String usbpath  = new USBUtil(context).getUsbFilePath();
-            Log.i("StartReceiver", "run: usbpath = " + usbpath);
-            if (!usbpath.isEmpty()){
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.i("StartReceiver", "run: ---重启咯---");
-                        Intent restartIntent = new Intent();
-                        String packageName = "com.twd.factorytesting";
-                        String className = "com.twd.factorytesting.MainActivity";
-                        restartIntent.setClassName(packageName, className);
-                        restartIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-                        List<ActivityManager.RunningTaskInfo> runningTasks = activityManager.getRunningTasks(1);
-                        if (runningTasks!= null && runningTasks.size() > 0) {
-                            Log.i("StartReceiver", "run: activityManager h和 runningTasks 不是空，且有运行程序");
-                            ActivityManager.RunningTaskInfo topTask = runningTasks.get(0);
-                            if (!topTask.topActivity.getClassName().equals(className)) {
-                                Log.i("StartReceiver", "顶层程序不是我");
-                                try {
-                                    context.startActivity(restartIntent);
-                                    Log.i("StartReceiver", "启动成功");
-                                } catch (Exception e) {
-                                    Log.e("StartReceiver", "启动失败：" + e.getMessage());
-                                }
-                            } else {
-                                Log.i("StartReceiver", "目标 Activity 已在前台，无需启动");
-                            }
-                        } else {
-                            try {
-                                context.startActivity(restartIntent);
-                                Log.i("StartReceiver", "启动成功");
-                            } catch (Exception e) {
-                                Log.e("StartReceiver", "启动失败：" + e.getMessage());
-                            }
-                        }
-                    }
-                },1000);
+        Log.i("WifiConnectionService", "onReceive: 接收到广播");
+        if (action!= null && action.equals(Intent.ACTION_MEDIA_MOUNTED)) {
+            Log.i("WifiConnectionService", "onReceive: 广播类型正确");
+            if (WifiConnectionService.getInstance() == null) {
+                Log.i("WifiConnectionService", "onReceive: 服务没有实例");
+                Intent serviceIntent = new Intent(context, WifiConnectionService.class);
+                context.startService(serviceIntent);
+            }else {
+                Log.i("WifiConnectionService", "onReceive: 服务有实例所以不启动服务");
             }
+            /*Intent serviceIntent = new Intent(context, WifiConnectionService.class);
+            context.startService(serviceIntent);*/
         }
     }
 }
