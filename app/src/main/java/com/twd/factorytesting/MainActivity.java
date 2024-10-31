@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.hardware.usb.UsbManager;
 import android.media.tv.TvContract;
@@ -30,7 +31,9 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.Window;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -81,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView wifi_num;
     private TextView rom_size;
     private TextView ram_size;
+    private ImageView picView;
     WifiManager wifiManager;
     BluetoothAdapter bluetoothAdapter;
     IntentFilter wifiFilter;
@@ -91,6 +95,9 @@ public class MainActivity extends AppCompatActivity {
     private List<BluetoothDevice> deviceList;
     USBUtil usbUtil;
     GsensorTest gsensorTest;
+    private boolean isImageViewVisible = false;
+    private int currentImageIndex = 0;
+    private int[] imageResources = {R.drawable.white_1080,R.drawable.black_1080,R.drawable.text_1080,R.drawable.rainbow,R.drawable.color_1080};
 
     private Handler mHandler = new Handler(Looper.getMainLooper()){
         @Override
@@ -131,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        picView = findViewById(R.id.im_imageTest);
         deviceInfo();
         bleInit();
         tv_keyResult = findViewById(R.id.key_result);
@@ -251,8 +259,33 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(TAG,"找不到老化界面");
                 e.printStackTrace();
             }
+        } else if ((keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) &&!isImageViewVisible) {
+            picView.setVisibility(View.VISIBLE);
+            Log.i(TAG, "onKeyDown: 第一次显示图片");
+            isImageViewVisible = true;
+            currentImageIndex = 2;
+            picView.setImageResource(imageResources[currentImageIndex]);
+            return true;
+        } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+            currentImageIndex = (currentImageIndex -1 + imageResources.length) % imageResources.length;
+            picView.setImageResource(imageResources[currentImageIndex]);
+            return true;
+        } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+            currentImageIndex = (currentImageIndex + 1) % imageResources.length;
+            picView.setImageResource(imageResources[currentImageIndex]);
+            return true;
         }
         return super.onKeyDown(keyCode,event);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isImageViewVisible){
+            isImageViewVisible = false;
+            picView.setVisibility(View.GONE);
+        }else {
+            super.onBackPressed();
+        }
     }
 
     /*

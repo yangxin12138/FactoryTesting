@@ -324,5 +324,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
     </LinearLayout>
-
+    <ImageView
+        android:id="@+id/im_imageTest"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/text_1080"
+        android:visibility="gone"/>
 </LinearLayout>
