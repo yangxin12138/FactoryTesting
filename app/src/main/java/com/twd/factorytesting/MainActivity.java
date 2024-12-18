@@ -46,6 +46,7 @@ import androidx.core.app.ActivityCompat;
 import com.twd.factorytesting.test.BluetoothTest;
 import com.twd.factorytesting.test.GsensorTest;
 import com.twd.factorytesting.test.HeadsetTest;
+import com.twd.factorytesting.test.MotorTest;
 import com.twd.factorytesting.test.SpeakTest;
 import com.twd.factorytesting.test.USBTest;
 import com.twd.factorytesting.test.WifiTest;
@@ -149,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
         wifiInit();
         speakTest= new SpeakTest(this);
         gsensorInit();
+        MotorTest.startMotorLoop();
     }
 
     /*
@@ -440,6 +442,7 @@ public class MainActivity extends AppCompatActivity {
         hdmiView.reset();
         speakTest.stop();
         gsensorTest.doStop();
+        MotorTest.stopMotorLoop();
         unregisterReceiver(wifiReceiver);
         unregisterReceiver(bleReceiver);
         unregisterReceiver(usbTest.usbReceiver);
@@ -455,6 +458,7 @@ public class MainActivity extends AppCompatActivity {
         MacErrorDialog.resetInstance();
         speakTest.stop();
         gsensorTest.doStop();
+        MotorTest.stopMotorLoop();
     }
 
     @Override
@@ -474,6 +478,7 @@ public class MainActivity extends AppCompatActivity {
         wifiInit();
         bleInit();
         gsensorInit();
+        MotorTest.startMotorLoop();
         registerReceiver(wifiReceiver, wifiFilter);
         registerReceiver(bleReceiver, bleFilter);
         registerReceiver(usbTest.usbReceiver, usbFilter);
