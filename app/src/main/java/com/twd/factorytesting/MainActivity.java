@@ -176,11 +176,7 @@ public class MainActivity extends AppCompatActivity {
     /*
     * hdmi测试*/
     private void hdmiInit(){
-        String input = "com.softwinner.vis/.HdmiInputService/HW1";
-        hdmiView = findViewById(R.id.hdmi_view);
-        hdmiView.reset();
-        Uri uri = TvContract.buildChannelUriForPassthroughInput(input);
-        hdmiView.tune(input,uri);
+
     }
 
     /*
