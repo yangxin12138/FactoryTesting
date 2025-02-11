@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="textSize">20sp</dimen>
+    <dimen name="textSize_sf">18sp</dimen>
+    <dimen name="textMargin">3dp</dimen>
+</resources>
