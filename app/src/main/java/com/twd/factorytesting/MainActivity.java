@@ -380,6 +380,7 @@ public class MainActivity extends AppCompatActivity {
             isMacVerify();
         }else {
             Log.i(TAG, "应用启动时没有检测到 U 盘：");
+            isMacVerify();
         }
     }
     private void isMacVerify(){
