@@ -85,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView wifi_num;
     private TextView rom_size;
     private TextView ram_size;
+    private TextView softwareTime_text;
     private ImageView picView;
     WifiManager wifiManager;
     BluetoothAdapter bluetoothAdapter;
@@ -241,6 +242,23 @@ public class MainActivity extends AppCompatActivity {
         ram_size = findViewById(R.id.ram_size);
         rom_size.setText("存储空间："+ StorageUtils.getTotalStorageSize());
         ram_size.setText("运行内存："+StorageUtils.getTotalMemorySize());
+        softwareTime_text = findViewById(R.id.software_time_textView);
+        softwareTime_text.setText(processVersion(softwareVersion));
+    }
+
+    public static String processVersion(String version) {
+        String[] parts = version.split("\\.");
+        if (parts.length > 2) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 2; i < parts.length; i++) {
+                if (i > 2) {
+                    sb.append(".");
+                }
+                sb.append(parts[i]);
+            }
+            return sb.toString();
+        }
+        return "";
     }
 
     /*

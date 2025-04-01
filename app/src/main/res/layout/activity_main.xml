@@ -311,7 +311,7 @@
                 android:textSize="@dimen/textSize"/>
         </RelativeLayout>
     </LinearLayout>
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/right_layout"
         android:layout_width="0dp"
         android:layout_height="match_parent"
@@ -323,7 +323,17 @@
             android:id="@+id/hdmi_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
-    </LinearLayout>
+        <TextView
+            android:id="@+id/software_time_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:text="显示的文字"
+            android:textSize="60sp"
+            android:textColor="@color/white"
+            android:elevation="5dp"
+            android:layout_gravity="center"/>
+    </FrameLayout>
     <ImageView
         android:id="@+id/im_imageTest"
         android:layout_width="match_parent"
