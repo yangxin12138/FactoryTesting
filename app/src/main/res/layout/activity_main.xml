@@ -311,29 +311,42 @@
                 android:textSize="@dimen/textSize"/>
         </RelativeLayout>
     </LinearLayout>
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/right_layout"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:paddingTop="100dp"
-        android:paddingBottom="100dp">
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
         <android.media.tv.TvView
             android:id="@+id/hdmi_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-        <TextView
-            android:id="@+id/software_time_textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:text="显示的文字"
-            android:textSize="60sp"
-            android:textColor="@color/white"
-            android:elevation="5dp"
-            android:layout_gravity="center"/>
-    </FrameLayout>
+            android:layout_height="0dp"
+            android:layout_weight="2"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+            <SurfaceView
+                android:id="@+id/cameraView"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+            <TextView
+                android:id="@+id/software_time_textView"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:text="显示的文字"
+                android:textSize="60sp"
+                android:textColor="@color/black"
+                android:elevation="5dp"
+                android:layout_gravity="center"/>
+        </LinearLayout>
+    </LinearLayout>
     <ImageView
         android:id="@+id/im_imageTest"
         android:layout_width="match_parent"

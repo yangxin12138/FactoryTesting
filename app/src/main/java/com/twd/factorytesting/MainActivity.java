@@ -31,6 +31,8 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
@@ -44,6 +46,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.twd.factorytesting.test.BluetoothTest;
+import com.twd.factorytesting.test.CameraTest;
 import com.twd.factorytesting.test.GsensorTest;
 import com.twd.factorytesting.test.HeadsetTest;
 import com.twd.factorytesting.test.MotorTest;
@@ -51,6 +54,7 @@ import com.twd.factorytesting.test.SpeakTest;
 import com.twd.factorytesting.test.USBTest;
 import com.twd.factorytesting.test.WifiTest;
 import com.twd.factorytesting.util.StorageUtils;
+import com.twd.factorytesting.util.ToastUtil;
 import com.twd.factorytesting.util.USBUtil;
 
 import java.util.ArrayList;
@@ -87,6 +91,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView ram_size;
     private TextView softwareTime_text;
     private ImageView picView;
+    private SurfaceView cameraView;
+    SurfaceHolder surfaceHolder;
+    CameraTest cameraTest;
     WifiManager wifiManager;
     BluetoothAdapter bluetoothAdapter;
     IntentFilter wifiFilter;
@@ -129,6 +136,9 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "handleMessage: u盘文件连接");
                 isMacVerify();
                 connectWifi();
+            } else if (msg.what == 7) {
+                Log.d(TAG, "handleMessage: 设备未连接相机");
+                ToastUtil.showCustomToast(getApplicationContext(),"设备未连接摄像头",Toast.LENGTH_SHORT);
             }
         }
     };
@@ -152,6 +162,14 @@ public class MainActivity extends AppCompatActivity {
         speakTest= new SpeakTest(this);
         gsensorInit();
         MotorTest.startMotorLoop();
+        cameraInit();
+    }
+
+    private void cameraInit(){
+        cameraView = findViewById(R.id.cameraView);
+        surfaceHolder = cameraView.getHolder();
+        cameraTest = new CameraTest(surfaceHolder,mHandler);
+        cameraTest.openCamera();
     }
 
     /*
@@ -462,6 +480,7 @@ public class MainActivity extends AppCompatActivity {
         speakTest.stop();
         gsensorTest.doStop();
         MotorTest.stopMotorLoop();
+        cameraTest.stopCamera();
         unregisterReceiver(wifiReceiver);
         unregisterReceiver(bleReceiver);
         unregisterReceiver(usbTest.usbReceiver);
@@ -478,6 +497,7 @@ public class MainActivity extends AppCompatActivity {
         speakTest.stop();
         gsensorTest.doStop();
         MotorTest.stopMotorLoop();
+        cameraTest.stopCamera();
     }
 
     @Override
@@ -486,6 +506,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("yangxin", "onRestart: 重新播放");
         hdmiInit();
         speakerInit();
+        cameraInit();
     }
 
     @Override
@@ -497,6 +518,7 @@ public class MainActivity extends AppCompatActivity {
         wifiInit();
         bleInit();
         gsensorInit();
+        cameraInit();
         MotorTest.startMotorLoop();
         registerReceiver(wifiReceiver, wifiFilter);
         registerReceiver(bleReceiver, bleFilter);
