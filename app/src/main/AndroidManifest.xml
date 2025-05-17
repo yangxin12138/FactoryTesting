@@ -49,6 +49,7 @@
             </intent-filter>
         </receiver>
         <service android:name=".WifiConnectionService" />
+        <service android:name=".UsbCopyFileService" />
     </application>
 
 </manifest>

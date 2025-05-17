@@ -106,6 +106,24 @@ public class USBUtil {
         return "";//未挂载
     }
 
+    public boolean checkUsbFolderExist(String folderName){//“COPY_FILE”
+        if (TextUtils.isEmpty(folderName)){
+            return false;
+        }
+        // 获取U盘根路径
+        String usbRootPath = getUsbFilePath();
+        if (TextUtils.isEmpty(usbRootPath)) {
+            Log.e("UsbCopyFileService", "未找到可移动存储设备");
+            return false;
+        }
+        // 构建完整路径
+        String targetPath = usbRootPath + File.separator + folderName;
+        Log.d("UsbCopyFileService", "检查路径: " + targetPath);
+        // 检查文件夹是否存在
+        File folder = new File(targetPath);
+        return folder.exists() && folder.isDirectory();
+    }
+
 
     public String getWifiSSID() {
         return wifiSSID;

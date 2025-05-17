@@ -17,6 +17,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.twd.factorytesting.MainActivity;
+import com.twd.factorytesting.UsbCopyFileService;
 import com.twd.factorytesting.WifiConnectionService;
 import com.twd.factorytesting.test.WifiTest;
 
@@ -46,8 +47,14 @@ public class StartReceiver extends BroadcastReceiver {
             }else {
                 Log.i("WifiConnectionService", "onReceive: 服务有实例所以不启动服务");
             }
-            /*Intent serviceIntent = new Intent(context, WifiConnectionService.class);
-            context.startService(serviceIntent);*/
+
+            if (UsbCopyFileService.getInstance() == null){
+                Log.i("UsbCopyFileService", "onReceive: USB服务没有实例");
+                Intent usbServiceIntent = new Intent(context, UsbCopyFileService.class);
+                context.startService(usbServiceIntent);
+            }else {
+                Log.i("UsbCopyFileService", "onReceive: USB服务有实例所以不启动服务");
+            }
         }
     }
 }
