@@ -94,8 +94,7 @@ public class UsbCopyFileService extends Service {
     private void copyToDevice(String copyPath){
         Log.i(TAG, "copyToDevice: 开始复制");
         File sdcardDir = Environment.getExternalStorageDirectory();
-        String targetPath = sdcardDir.getAbsolutePath() + "/copyFile";
-        Log.i(TAG, "copyToDevice: targetPath = "+targetPath);
+        String targetPath = sdcardDir.getAbsolutePath();
         File destDir = new File(targetPath);
 
         new Thread(() -> {
