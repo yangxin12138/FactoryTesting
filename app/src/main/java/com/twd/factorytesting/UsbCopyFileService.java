@@ -102,7 +102,8 @@ public class UsbCopyFileService extends Service {
             try{
                 if (usbUtil.checkUsbFolderExist(copyPath)){
                     File sourceDir = new File(usbUtil.getUsbFilePath()+File.separator+copyPath);
-                    copyDirectory(sourceDir,destDir);
+                    File newDestDir = new File(destDir, sourceDir.getName());
+                    copyDirectory(sourceDir,newDestDir);
                     Log.i(TAG, "copyToDevice: 复制完成，目标路径: " + targetPath);
                     success = true;
                 }else {
