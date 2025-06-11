@@ -4,7 +4,6 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:gravity="center"
-    android:padding="100dp"
     android:background="@color/dialog_bg">
 
     <TextView
@@ -13,6 +12,8 @@
         android:layout_height="wrap_content"
         android:text="MAC 地址错误"
         android:textSize="40sp"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        android:layout_margin="100dp"
+        android:singleLine="true" />
 
 </LinearLayout>
