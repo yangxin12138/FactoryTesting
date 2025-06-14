@@ -50,7 +50,7 @@ public class MacTestService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i("MacTestService", "onStartCommand: MAC检测服务启动");
-        isMacVerify();
+        new Handler(Looper.getMainLooper()).postDelayed(this::isMacVerify, 5000);
         return START_STICKY;
     }
 
@@ -68,11 +68,12 @@ public class MacTestService extends Service {
             macAddress =macAddress.toUpperCase();
             Log.i("MacTestService", "isMacVerify: MAC ="+macAddress);
             String[] parts = macAddress.split(":");
-            if (parts.length >= 3 && parts[0].equals("76") && parts[1].equals("AF") && parts[2].equals("F7")){
-                Log.i("MacTestService", "isMacVerify: MAC合法");
+            String[] macAddr = Utils.readSystemProp("MAC_VALID_ADDR").split(":");
+            if (parts.length >= 3 && parts[0].equals(macAddr[0]) && parts[1].equals(macAddr[1]) && parts[2].equals(macAddr[2])){
+                Log.i("MacTestService", "isMacVerify: MAC合法" + macAddress);
             }else {
                 String verify = Utils.readSystemProp("MAC_VALID_CHECK");
-                Log.i("MacTestService", "isMacVerify: verify = "+ verify);
+                Log.i("MacTestService", "isMacVerify: verify = "+ verify + ",macAddress = " + macAddress);
                 if (verify.equals("true")){
                     Log.i("MacTestService", "isMacVerify: 显示错误窗口");
                     showMacErrorDialog("MAC ERROR");
