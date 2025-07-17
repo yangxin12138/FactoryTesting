@@ -28,7 +28,8 @@ public class BootReceiver extends BroadcastReceiver {
                 WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
                 boolean isWiFiEnabled = wifiManager.isWifiEnabled();
                 boolean verify = Boolean.parseBoolean(Utils.readSystemProp("MAC_TEST_LAUNCHER").trim());
-                if (verify){
+                boolean mac_check = Boolean.parseBoolean(Utils.readSystemProp("MAC_VALID_CHECK").trim());
+                if (verify && mac_check){
                     if(isWiFiEnabled) {
                         Log.i(TAG, "onReceive: WiFi已启用，启动服务");
                         Intent serviceIntent = new Intent(context, MacTestService.class);

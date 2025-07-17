@@ -429,9 +429,10 @@ public class MainActivity extends AppCompatActivity {
                 tv_wifiMac.setText(macAddress);
             }else {
                 boolean verify = Boolean.parseBoolean(Utils.readSystemProp("MAC_TEST_LAUNCHER").trim());
+                boolean mac_check = Boolean.parseBoolean(Utils.readSystemProp("MAC_VALID_CHECK").trim());
                 Log.i("yangxin", "isMacVerify: verify = "+ verify);
                 //TODO:  mac错误对话框
-                if (!verify){
+                if (!verify && mac_check){
                     showMacErrorDialog();
                 }
                 tv_wifiMac.setText(macAddress);
