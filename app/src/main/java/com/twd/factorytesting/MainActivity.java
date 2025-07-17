@@ -56,6 +56,7 @@ import com.twd.factorytesting.test.WifiTest;
 import com.twd.factorytesting.util.StorageUtils;
 import com.twd.factorytesting.util.ToastUtil;
 import com.twd.factorytesting.util.USBUtil;
+import com.twd.factorytesting.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -423,15 +424,14 @@ public class MainActivity extends AppCompatActivity {
         String macAddress = wifiTest.convertMacToUpperCase();
         if (macAddress != null){
             String[] parts = macAddress.split(":");
-            if (parts.length >= 3 && parts[0].equals("74") && parts[1].equals("AF") && parts[2].equals("F7")){
+            String[] macAddr = Utils.readSystemProp("MAC_VALID_ADDR").split(":");
+            if (parts.length >= 3 && parts[0].equals(macAddr[0]) && parts[1].equals(macAddr[1]) && parts[2].equals(macAddr[2])){
                 tv_wifiMac.setText(macAddress);
             }else {
-                usbUtil.usbFilePath = usbUtil.getUsbFilePath();
-                usbUtil.getMacVerify();
-                String verify = usbUtil.getVerify();
+                boolean verify = Boolean.parseBoolean(Utils.readSystemProp("MAC_TEST_LAUNCHER").trim());
                 Log.i("yangxin", "isMacVerify: verify = "+ verify);
                 //TODO:  mac错误对话框
-                if (verify.equals("1")){
+                if (!verify){
                     showMacErrorDialog();
                 }
                 tv_wifiMac.setText(macAddress);

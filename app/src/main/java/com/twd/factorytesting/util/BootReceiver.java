@@ -27,13 +27,15 @@ public class BootReceiver extends BroadcastReceiver {
 
                 WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
                 boolean isWiFiEnabled = wifiManager.isWifiEnabled();
-
-                if(isWiFiEnabled) {
-                    Log.i(TAG, "onReceive: WiFi已启用，启动服务");
-                    Intent serviceIntent = new Intent(context, MacTestService.class);
-                    context.startService(serviceIntent);
-                }else {
-                    Log.i(TAG, "onReceive: WiFi未开启，不启动服务");
+                boolean verify = Boolean.parseBoolean(Utils.readSystemProp("MAC_TEST_LAUNCHER").trim());
+                if (verify){
+                    if(isWiFiEnabled) {
+                        Log.i(TAG, "onReceive: WiFi已启用，启动服务");
+                        Intent serviceIntent = new Intent(context, MacTestService.class);
+                        context.startService(serviceIntent);
+                    }else {
+                        Log.i(TAG, "onReceive: WiFi未开启，不启动服务");
+                    }
                 }
         }
     }

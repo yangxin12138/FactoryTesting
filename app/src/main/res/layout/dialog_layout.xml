@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
-    android:background="@color/dialog_bg">
+    android:background="@color/dialog_bg"
+    android:padding="30dp">
 
     <TextView
         android:id="@+id/error_message"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="MAC 地址错误"
-        android:textSize="40sp"
-        android:textColor="@color/red"
-        android:layout_margin="100dp"
-        android:singleLine="true" />
+    android:layout_height="wrap_content"
+    android:text="MAC 地址错误"
+    android:textSize="40sp"
+    android:textColor="@color/red"
+    android:singleLine="false"
+    android:maxLines="5"
+    android:ellipsize="end"
+    android:gravity="center"
+    android:layout_margin="0dp"/>
 
 </LinearLayout>
